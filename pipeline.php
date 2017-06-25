@@ -1,4 +1,9 @@
 <?php
+use \Nodes\Input;
+use \Nodes\Linear;
+use \Nodes\Sigmoid;
+use \Nodes\MSE;
+
 require_once __DIR__ . '/vendor/autoload.php';
 
 // instantiate Aura PSR-4 autoloader
@@ -10,6 +15,7 @@ $loader->register();
 $loader->addPrefix('dataset', '/projects/miniphlow/Dataset');
 $loader->addPrefix('Numphy', '/projects/miniphlow/Numphy');
 $loader->addPrefix('Nodes', '/projects/miniphlow/Nodes');
+$loader->addPrefix('Graphs', '/projects/miniphlow/Graphs');
 
 list($data, $target) = \dataset\Load::boston();
 
@@ -29,10 +35,32 @@ $n_features = count($X_);
 $n_hidden = 10;
 
 $W1_ = (new \Numphy\Randn($n_features, $n_hidden))->calculate();
-$W2_ = (new \Numphy\Randn($n_hidden))->calculate();
+$W2_ = (new \Numphy\Randn($n_hidden, 1))->calculate();
 $b1_ = array_fill(0, $n_hidden, 0);
 $b2_ = array_fill(0, 1, 0);
 
+$X  = new Input();
+$y  = new Input();
+$W1 = new Input();
+$b1 = new Input();
+$W2 = new Input();
+$b2 = new Input();
 
-//$node = new \Nodes\Node();
+$l1 = new Linear($X, $W1, $b1);
+$s1 = new Sigmoid($l1);
+$l2 = new Linear($s1, $W2, $b2);
+$cost = new MSE($y, $l2);
+
+$keys = array($X, $y, $W1, $b1, $W2, $b2)
+$values = array($X_, $y_, $W1_, $b1_, $W2_, $b2_);
+$feed_dict = new \Graphs\FeedDict($keys, $values);
+
+$epochs = 1000;
+# Total number of examples
+$m = count($X_);
+$batch_size = 11;
+$steps_per_epoch = $m; // batch_size
+
+$graph = topological_sort($feed_dict);
+
 ?>
