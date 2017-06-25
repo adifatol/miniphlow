@@ -19,7 +19,11 @@ abstract class Node {
     /* A list of nodes that this node outputs to */
     var $outbound_nodes;
 
-    public function construct(array $inbound_nodes) {
+    public function __toString() {
+        return spl_object_hash($this);
+    }
+
+    public function __construct(array $inbound_nodes = array()) {
         $this->inbound_nodes = $inbound_nodes;
         $this->value = null;
         $this->outbound_nodes = [];
