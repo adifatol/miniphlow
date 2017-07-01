@@ -46,12 +46,12 @@ $b1 = new Input();
 $W2 = new Input();
 $b2 = new Input();
 
-$l1 = new Linear($X, $W1, $b1);
-$s1 = new Sigmoid($l1);
-$l2 = new Linear($s1, $W2, $b2);
-$cost = new MSE($y, $l2);
+$l1 = new Linear(array($X, $W1, $b1));
+$s1 = new Sigmoid(array($l1));
+$l2 = new Linear(array($s1, $W2, $b2));
+$cost = new MSE(array($y, $l2));
 
-$keys = array($X, $y, $W1, $b1, $W2, $b2)
+$keys = array($X, $y, $W1, $b1, $W2, $b2);
 $values = array($X_, $y_, $W1_, $b1_, $W2_, $b2_);
 $feed_dict = new \Graphs\FeedDict($keys, $values);
 
@@ -61,6 +61,10 @@ $m = count($X_);
 $batch_size = 11;
 $steps_per_epoch = $m; // batch_size
 
-$graph = topological_sort($feed_dict);
+$graph = \Graphs\Sort::topological($feed_dict);
+
+foreach($graph as $g) {
+    print_r(get_class($g)); echo "\n";
+}
 
 ?>

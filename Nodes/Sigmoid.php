@@ -8,10 +8,6 @@ namespace Nodes;
 
 class Sigmoid extends Node{
 
-    public function __construct() {
-//        return parent::__construct(array($X, $W, $b));
-    }
-
     /*
      * 
      */

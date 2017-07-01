@@ -8,46 +8,54 @@ namespace Graphs;
  * Returns a list of sorted nodes. 
  */
 class Sort {
-    public function topological(FeedDict $feed_dict) {
-//
-//    foreach($feed_dict as $key => $value) {
-//        $input_nodes[] = $key;
-//    }
-//    input_nodes = [n for n in feed_dict.keys()]
-//        
-//    }
+    public static function topological(FeedDict $feed_dict) {
+
+        $input_nodes = [];
+
+        foreach($feed_dict as $key => $value) {
+            $input_nodes[] = $key;
+        }
+
+        $G = [];
+        $nodes = $input_nodes;
+
+        while (count($nodes) > 0) {
+
+            $n = array_shift($nodes);
+            if (!isset($G[(string)$n])) {
+                $G[(string)$n] = ['in'=> [], 'out'=> []];
+            }
+            foreach($n->outbound_nodes as $m) {
+                if (!isset($G[(string)$m])) {
+                    $G[(string)$m] = ['in'=> [], 'out'=> []];
+                }
+                $G[(string)$n]['out'][(string)$m] = $m;
+                $G[(string)$m]['in'][(string)$n] = $n;
+                $nodes[] = $m;
+            }
+        }
+
+        $L = [];
+        $S = $input_nodes;
+
+        while (count($S) > 0) {
+            $n = array_pop($S);
+
+            if ($n instanceof \Nodes\Input) {
+                $n->value = $feed_dict->getValue($n);
+            }
+
+            $L[] = $n;
+
+            foreach($n->outbound_nodes as $m) {
+                unset($G[(string)$n]['out'][(string)$m]);
+                unset($G[(string)$m]['in'][(string)$n]);
+                if (count($G[(string)$m]['in']) == 0) {
+                    $S[] = $m;
+                }
+            }
+        }
+
+        return $L;
+    }
 }
-//
-//def topological_sort(feed_dict):
-//
-//    input_nodes = [n for n in feed_dict.keys()]
-//
-//    G = {}
-//    nodes = [n for n in input_nodes]
-//    while len(nodes) > 0:
-//        n = nodes.pop(0)
-//        if n not in G:
-//            G[n] = {'in': set(), 'out': set()}
-//        for m in n.outbound_nodes:
-//            if m not in G:
-//                G[m] = {'in': set(), 'out': set()}
-//            G[n]['out'].add(m)
-//            G[m]['in'].add(n)
-//            nodes.append(m)
-//
-//    L = []
-//    S = set(input_nodes)
-//    while len(S) > 0:
-//        n = S.pop()
-//
-//        if isinstance(n, Input):
-//            n.value = feed_dict[n]
-//
-//        L.append(n)
-//        for m in n.outbound_nodes:
-//            G[n]['out'].remove(m)
-//            G[m]['in'].remove(n)
-//            # if no other incoming edges add to S
-//            if len(G[m]['in']) == 0:
-//                S.add(m)
-//    return L

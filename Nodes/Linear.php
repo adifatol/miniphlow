@@ -8,10 +8,6 @@ namespace Nodes;
 
 class Linear extends Node{
 
-    public function __construct($X, $W, $b) {
-        return parent::__construct(array($X, $W, $b));
-    }
-
     /*
      * Performs the math behind a linear transform.
      */
